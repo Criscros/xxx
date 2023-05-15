@@ -5,31 +5,15 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
-      # Install AWS CLI
-      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      unzip awscliv2.zip
-      sudo ./aws/install
-
-  pre_build:
-    commands:
-      # Install dependencies
-      pip install -r requirements.txt -t src/
-
+      - echo Installing dependencies...
+      - pip install -r requirements.txt -t ./src
   build:
     commands:
-      # Package SAM application
-      aws cloudformation package \
-        --template-file template.yaml \
-        --output-template-file packaged-template.yaml \
-        --s3-bucket my-bucket
-
-      # Deploy SAM application
-      aws cloudformation deploy \
-        --template-file packaged-template.yaml \
-        --stack-name my-stack \
-        --capabilities CAPABILITY_IAM
-
-artifacts:
-  type: zip
-  files:
-    - packaged-template.yaml
+      - echo Building the SAM package...
+      - sam build
+  deploy:
+    commands:
+      - echo Deploying the SAM template...
+      - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+      - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+      - sam deploy --stack-name coinmarketcap-api --region us-east-1 --no-confirm-changeset
