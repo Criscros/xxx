@@ -20,6 +20,11 @@ on:
   push:
     branches:
       - main
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
