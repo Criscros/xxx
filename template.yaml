@@ -61,7 +61,7 @@ Resources:
         MyApi:
           Type: 'Api'
           Properties:
-            Path: /
+            Path: / 
             Method: get
       Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
