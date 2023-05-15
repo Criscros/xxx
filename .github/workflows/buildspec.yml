@@ -1,22 +1,23 @@
 version: 0.2
-on:
-  push:
-    branches:
-      - main
+
+env:
+  variables:
+    AWS_ACCESS_KEY_ID: <your-access-key-id>
+    AWS_SECRET_ACCESS_KEY: <your-secret-access-key>
+
 phases:
   install:
     runtime-versions:
       python: 3.8
     commands:
-      - echo Installing dependencies...
-      - pip install -r requirements.txt -t ./src
+      - pip install -r requirements.txt
   build:
     commands:
-      - echo Building the SAM package...
-      - sam build
-  deploy:
-    commands:
-      - echo Deploying the SAM template...
       - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
       - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-      - sam deploy --stack-name coinmarketcap-api --region us-east-1 --no-confirm-changeset
+      - sam build
+      - sam package --template-file template.yaml --s3-bucket <your-s3-bucket> --output-template-file packaged.yaml
+artifacts:
+  type: zip
+  files:
+    - packaged.yaml
