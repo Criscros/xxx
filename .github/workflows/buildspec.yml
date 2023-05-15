@@ -1,23 +1,35 @@
-name: Deploy to AWS
+version: 0.2
 
-on:
-  push:
-    branches:
-      - main
+phases:
+  install:
+    runtime-versions:
+      python: 3.8
+    commands:
+      # Install AWS CLI
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      sudo ./aws/install
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-      - name: Deploy to AWS
-        run: | 
-          sam build
-          sam deploy --template-file sam.yaml --stack-name coinmarketcap-api --capabilities CAPABILITY_IAM
+  pre_build:
+    commands:
+      # Install dependencies
+      pip install -r requirements.txt -t src/
+
+  build:
+    commands:
+      # Package SAM application
+      aws cloudformation package \
+        --template-file template.yaml \
+        --output-template-file packaged-template.yaml \
+        --s3-bucket my-bucket
+
+      # Deploy SAM application
+      aws cloudformation deploy \
+        --template-file packaged-template.yaml \
+        --stack-name my-stack \
+        --capabilities CAPABILITY_IAM
+
+artifacts:
+  type: zip
+  files:
+    - packaged-template.yaml

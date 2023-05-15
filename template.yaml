@@ -64,7 +64,6 @@ Resources:
             Path: /
             Method: get
       Policies:
-      Policies:
         # Give Create/Read/Update/Delete Permissions to the SampleTable
       - DynamoDBCrudPolicy:
           TableName: !Ref ItemsTable
