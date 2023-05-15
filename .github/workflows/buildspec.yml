@@ -20,11 +20,9 @@ on:
   push:
     branches:
       - main
-phases:
-  install:
-    runtime-versions:
-      python: 3.8
-
+env:
+  variables:
+    PYTHON_VERSION: "3.8"
 jobs:
   deploy:
     runs-on: ubuntu-latest
