@@ -28,12 +28,20 @@ jobs:
       - uses: aws-actions/setup-sam@v2
         with:
           use-installer: true
+      - uses: actions/checkout@v2
+      - name: Install Dependencies with Apt Get
+        run: |
+          sudo apt-get update
+          sudo apt-get install python3.8 jq -y
+      - name: Install Pip Dependencies for CI
+        run: |
+          pip3 install pytest
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
-      # Build inside Docker containers
-      - run: sam build
-      # Prevent prompts and failure when the stack is unchanged
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+      # # Build inside Docker containers
+      # - run: sam build
+      # # Prevent prompts and failure when the stack is unchanged
+      # - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
